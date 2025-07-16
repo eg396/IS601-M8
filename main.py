@@ -11,7 +11,6 @@ import uvicorn
 import logging
 
 """
-
 Deprecated logger. We now use a logger with 2 handlers so we can also send the logs to a file.
 
 # Setup logging
