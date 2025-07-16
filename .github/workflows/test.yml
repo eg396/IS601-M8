@@ -78,5 +78,5 @@ jobs:
            eg396/is601-m8:latest
            eg396/is601-m8:${{ github.sha }}
          platforms: linux/amd64,linux/arm64
-         cache-from: type=registry,ref=eg396/IS601-M8:cache
+         cache-from: type=registry,ref=eg396/is601-m8:cache
          cache-to: type=inline,mode=max
