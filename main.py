@@ -1,5 +1,6 @@
 # main.py
 
+import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -9,9 +10,42 @@ from app.operations import add, subtract, multiply, divide  # Ensure correct imp
 import uvicorn
 import logging
 
+"""
+
+Deprecated logger. We now use a logger with 2 handlers so we can also send the logs to a file.
+
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+"""
+
+log_dir = os.path.join(os.getcwd(), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
+log_file_path = os.path.join(log_dir, 'app.log')
+
+# Create a custom logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)  # Capture INFO and above
+
+# Create handlers
+console_handler = logging.StreamHandler()  # Console output
+file_handler = logging.FileHandler(log_file_path)  # File output
+
+# Set levels for handlers (optional, but usually same as logger level)
+console_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.INFO)
+
+# Create formatter and set it for both handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+# Add handlers to the logger
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
 
 app = FastAPI()
 
@@ -70,6 +104,7 @@ async def add_route(operation: OperationRequest):
     """
     try:
         result = add(operation.a, operation.b)
+        logger.info(f"Add operation successful: {operation.a} + {operation.b} = {result}")
         return OperationResponse(result=result)
     except Exception as e:
         logger.error(f"Add Operation Error: {str(e)}")
@@ -82,6 +117,7 @@ async def subtract_route(operation: OperationRequest):
     """
     try:
         result = subtract(operation.a, operation.b)
+        logger.info(f"Subtract operation successful: {operation.a} - {operation.b} = {result}")
         return OperationResponse(result=result)
     except Exception as e:
         logger.error(f"Subtract Operation Error: {str(e)}")
@@ -94,6 +130,7 @@ async def multiply_route(operation: OperationRequest):
     """
     try:
         result = multiply(operation.a, operation.b)
+        logger.info(f"Multiply operation successful: {operation.a} * {operation.b} = {result}")
         return OperationResponse(result=result)
     except Exception as e:
         logger.error(f"Multiply Operation Error: {str(e)}")
@@ -106,6 +143,7 @@ async def divide_route(operation: OperationRequest):
     """
     try:
         result = divide(operation.a, operation.b)
+        logger.info(f"Divide operation successful: {operation.a} / {operation.b} = {result}")
         return OperationResponse(result=result)
     except ValueError as e:
         logger.error(f"Divide Operation Error: {str(e)}")
